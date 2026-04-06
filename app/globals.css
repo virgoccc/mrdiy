@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --y: #FFD600;
+  --red: #C92B2B;
+  --orange: #C06000;
+  --green: #1A7A3C;
+  --blue: #1A5C9C;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: #F7F6F2;
+  color: #1A1A1A;
+  font-family: 'Barlow Condensed', sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #F7F6F2; }
+::-webkit-scrollbar-thumb { background: #CCC9B5; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #888880; }
+
+/* Service chip status colours */
+.chip-done    { border-color: #99DDB8 !important; background: #F0FFF5 !important; }
+.chip-overdue { border-color: #FFBBBB !important; background: #FFF1F1 !important; }
+.chip-soon    { border-color: #FFD099 !important; background: #FFF6ED !important; }
+.chip-ok      { border-color: #E2DFD3; background: #F7F6F2; }
+
+/* Countdown badge colours */
+.cd-done    { background:#F0FFF5; color:#1A7A3C; border:1px solid #99DDB8; }
+.cd-overdue { background:#FFF1F1; color:#C92B2B; border:1px solid #FFBBBB; }
+.cd-today   { background:#FFD600; color:#1A1A1A; border:1px solid #D4AF00; }
+.cd-soon    { background:#FFF6ED; color:#C06000; border:1px solid #FFD099; }
+.cd-ok      { background:#E5E2D8; color:#888880; border:1px solid #CCC9B5; }
