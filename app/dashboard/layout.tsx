@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex items-center gap-3">
           {!isClient && (
             <button onClick={() => router.push('/dashboard/reminders')}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-white text-xs font-bold"
+              className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg text-white text-xs font-bold"
               style={{background:'rgba(255,255,255,.1)',border:'1px solid rgba(255,255,255,.15)'}}>
               🔔 Reminders
             </button>
@@ -77,7 +77,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </div>
           <button onClick={handleLogout}
-            className="px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all"
+            className="hidden md:block px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all"
             style={{background:'transparent',border:'1px solid rgba(255,255,255,.18)',color:'rgba(255,255,255,.55)'}}>
             Sign Out
           </button>
@@ -86,7 +86,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside className="w-56 flex-shrink-0 sticky top-15 h-screen overflow-y-auto py-5"
+        <aside className="hidden md:block w-56 flex-shrink-0 sticky top-15 h-screen overflow-y-auto py-5"
           style={{top:'60px',height:'calc(100vh - 60px)',background:'#fff',borderRight:'1.5px solid #E2DFD3'}}>
           <div className="px-3">
             <p className="text-xs font-extrabold tracking-widest uppercase mb-3 px-2" style={{color:'#888880'}}>Navigation</p>
@@ -107,14 +107,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Main */}
         <main className="flex-1 overflow-x-auto flex flex-col" style={{background:'#F7F6F2'}}>
-          <div className="flex-1 p-6">{children}</div>
-          <footer className="text-center py-3 px-6" style={{borderTop:'1px solid #E2DFD3',background:'#fff'}}>
+          <div className="flex-1 p-3 md:p-6 pb-20 md:pb-6">{children}</div>
+          <footer className="hidden md:block text-center py-3 px-6" style={{borderTop:'1px solid #E2DFD3',background:'#fff'}}>
             <p style={{fontSize:'10px',fontFamily:'"Barlow Condensed",sans-serif',fontWeight:600,letterSpacing:'.5px',color:'#888880'}}>
               This system is the proprietary technology of C&amp;C Creative Consultancy Sdn Bhd. Unauthorized use or reproduction is prohibited.
             </p>
           </footer>
         </main>
       </div>
+
+      {/* Mobile Bottom Nav */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-2 py-2"
+        style={{background:'#1A1A1A',borderTop:'2px solid #FFD600',height:'60px'}}>
+        {navItems.map(n => (
+          <button key={n.href} onClick={() => router.push(n.href)}
+            className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg flex-1"
+            style={{color: pathname === n.href ? '#FFD600' : 'rgba(255,255,255,.5)'}}>
+            <span className="text-lg leading-none">{n.icon}</span>
+            <span className="text-xs font-bold tracking-wide" style={{fontSize:'10px'}}>{n.label}</span>
+          </button>
+        ))}
+        <button onClick={handleLogout}
+          className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg flex-1"
+          style={{color:'rgba(255,255,255,.5)'}}>
+          <span className="text-lg leading-none">🚪</span>
+          <span className="text-xs font-bold tracking-wide" style={{fontSize:'10px'}}>Sign Out</span>
+        </button>
+      </nav>
     </div>
   )
 }
