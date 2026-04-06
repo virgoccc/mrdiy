@@ -297,7 +297,7 @@ export default function JobBoardPage() {
   return (
     <div>
       {toastMsg && (
-        <div className="fixed top-20 right-4 z-50 px-4 py-3 rounded-xl font-bold text-sm shadow-xl"
+        <div className="fixed top-20 right-4 z-[200] px-4 py-3 rounded-xl font-bold text-sm shadow-xl"
           style={{ background: toastMsg.type === 'danger' ? '#FFF1F1' : toastMsg.type === 'info' ? '#EEF5FF' : '#F0FFF5', border: `1.5px solid ${toastMsg.type === 'danger' ? '#FFBBBB' : toastMsg.type === 'info' ? '#99C2F0' : '#99DDB8'}`, color: toastMsg.type === 'danger' ? '#C92B2B' : toastMsg.type === 'info' ? '#1A5C9C' : '#1A7A3C', minWidth: '240px' }}>
           {toastMsg.msg}
         </div>
