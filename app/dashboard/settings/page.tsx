@@ -5,6 +5,14 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { AppUser } from '@/types'
 
+function FL({ children }: { children: React.ReactNode }) {
+  return <label className="block text-xs font-extrabold uppercase tracking-widest mb-1" style={{ color: '#888880' }}>{children}</label>
+}
+
+function Fi({ value, onChange, placeholder, type = 'text' }: { value: string; onChange: (v: string) => void; placeholder?: string; type?: string }) {
+  return <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} className="w-full px-3 py-2 rounded-lg text-sm outline-none" style={{ background: '#F7F6F2', border: '1.5px solid #E2DFD3', fontFamily: '"Barlow Condensed",sans-serif', fontSize: '14px' }} />
+}
+
 export default function SettingsPage() {
   const supabase = createClient()
   const [currentUser, setCurrentUser] = useState<AppUser | null>(null)
