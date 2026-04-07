@@ -65,7 +65,7 @@ export const TL_STAGES: Record<ServiceKey, TimelineStage[]> = {
     { lbl: 'Order Received',       icon: '📋' },
     { lbl: 'Printing in Progress', icon: '🖨️' },
     { lbl: 'Buntings Installed',   icon: '🚩' },
-    { lbl: 'Buntings Dismantled',  icon: '✅' },
+    { lbl: 'Buntings Dismantled',  icon: '🚧' },
   ],
 }
 
