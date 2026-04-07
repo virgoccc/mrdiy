@@ -120,9 +120,7 @@ export default function SharePage({ params }: { params: { token: string } }) {
       <header className="sticky top-0 z-50 flex items-center justify-between px-6"
         style={{ background: '#1A1A1A', height: '60px', boxShadow: '0 2px 10px rgba(0,0,0,.2)' }}>
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: '#FFD600' }}>
-            <span style={{ fontSize: '16px' }}>🔧</span>
-          </div>
+          <img src="/mrdiy.png" alt="MR DIY" className="w-9 h-9 rounded-lg" style={{ objectFit: 'contain' }} />
           <div>
             <div className="font-extrabold text-white text-lg leading-none" style={{ fontFamily: '"Black Han Sans",sans-serif', letterSpacing: '1px' }}>MR.DIY</div>
             <div className="text-xs font-bold tracking-widest uppercase leading-none" style={{ color: 'rgba(255,255,255,.35)' }}>Campaign Tracker</div>
