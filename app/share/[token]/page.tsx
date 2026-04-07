@@ -135,15 +135,15 @@ export default function SharePage({ params }: { params: { token: string } }) {
       </header>
 
       {/* Content */}
-      <main className="flex-1 p-6">
-        <div className="flex items-center justify-between mb-5 gap-3 flex-wrap">
+      <main className="flex-1 p-3 md:p-6">
+        <div className="flex items-start justify-between mb-5 gap-3 flex-wrap">
           <div>
             <h1 className="text-2xl font-extrabold tracking-wide" style={{ fontFamily: '"Black Han Sans",sans-serif' }}>JOB BOARD</h1>
             <p className="text-sm mt-0.5" style={{ color: '#888880' }}>{label}</p>
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 flex-wrap w-full md:w-auto">
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="🔍 Search store / code…"
-              className="px-4 py-2 rounded-lg text-sm outline-none w-48"
+              className="px-4 py-2 rounded-lg text-sm outline-none flex-1 md:w-48 md:flex-none"
               style={{ background: '#fff', border: '1.5px solid #E2DFD3', fontFamily: '"Barlow Condensed",sans-serif' }} />
             <select value={stateFilter} onChange={e => setStateFilter(e.target.value)} className="px-3 py-2 rounded-lg text-sm outline-none"
               style={{ background: '#fff', border: '1.5px solid #E2DFD3', fontFamily: '"Barlow Condensed",sans-serif' }}>
@@ -153,7 +153,52 @@ export default function SharePage({ params }: { params: { token: string } }) {
           </div>
         </div>
 
-        <div className="rounded-xl overflow-hidden shadow-sm" style={{ border: '1.5px solid #E2DFD3', background: '#fff' }}>
+        {/* Mobile card view */}
+        <div className="block md:hidden flex flex-col gap-3 mb-4">
+          {filtered.map(j => (
+            <div key={j.id} className="rounded-xl p-4 shadow-sm" style={{ border: '1.5px solid #E2DFD3', background: '#fff' }}>
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <div className="font-extrabold text-sm">{j.name}</div>
+                  <div className="font-mono text-xs mt-0.5" style={{ color: '#D4AF00' }}>{j.code}</div>
+                </div>
+                <span className="px-2 py-1 rounded text-xs font-bold ml-2 flex-shrink-0" style={{ background: '#E5E2D8', border: '1px solid #CCC9B5', color: '#3A3A38' }}>{j.state || '—'}</span>
+              </div>
+              <div className="text-xs mb-2" style={{ color: '#888880' }}>{j.addr}</div>
+              <div className="flex items-center gap-2 mb-3 text-xs font-bold">{j.pic} <span className="font-mono font-normal" style={{ color: '#888880' }}>{j.phone}</span></div>
+              <div className="flex flex-col gap-1.5">
+                {(Object.entries(j.services) as [ServiceKey, any][]).map(([k, s]) => {
+                  const st = svcStatus(s)
+                  const d = daysFromNow(s.date)
+                  const { label: cdLbl } = countdownLabel(d, s.done)
+                  const chipBg = st === 'done' ? '#F0FFF5' : st === 'overdue' ? '#FFF1F1' : st === 'soon' ? '#FFF6ED' : '#F7F6F2'
+                  const chipBorder = st === 'done' ? '#99DDB8' : st === 'overdue' ? '#FFBBBB' : st === 'soon' ? '#FFD099' : '#E2DFD3'
+                  return (
+                    <div key={k} className="flex items-center gap-2 px-3 py-2 rounded-lg"
+                      style={{ background: chipBg, border: `1.5px solid ${chipBorder}` }}>
+                      <span className="text-base w-5 text-center flex-shrink-0">{SVC_META[k].icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-extrabold uppercase tracking-wide" style={{ color: '#3A3A38' }}>{SVC_META[k].label}</div>
+                        <div className={`font-mono text-xs mt-0.5 font-semibold ${st === 'overdue' ? 'text-red-600' : st === 'soon' ? 'text-orange-600' : st === 'done' ? 'text-green-700' : 'text-gray-400'}`}>{formatDate(s.date)}</div>
+                      </div>
+                      <span className="text-xs font-extrabold">{cdLbl}</span>
+                    </div>
+                  )
+                })}
+              </div>
+              {j.timeline && <TimelinePanel job={j} />}
+            </div>
+          ))}
+          {filtered.length === 0 && (
+            <div className="text-center py-12 text-gray-400">
+              <div className="text-4xl mb-3">🗂️</div>
+              <div className="text-sm font-bold tracking-widest uppercase">No jobs found</div>
+            </div>
+          )}
+        </div>
+
+        {/* Desktop table view */}
+        <div className="hidden md:block rounded-xl overflow-hidden shadow-sm" style={{ border: '1.5px solid #E2DFD3', background: '#fff' }}>
           <table className="w-full border-collapse">
             <thead style={{ background: '#1A1A1A', borderBottom: '3px solid #FFD600' }}>
               <tr>
