@@ -405,19 +405,19 @@ export default function JobBoardPage() {
           <tbody>
             {filtered.map(j => (
               <tr key={j.id} className="border-b transition-colors" style={{ borderColor: '#E2DFD3' }}>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 align-top">
                   <div className="font-extrabold text-sm">{j.name}</div>
                   <div className="font-mono text-xs mt-0.5" style={{ color: '#D4AF00' }}>{j.code}</div>
                   <div className="text-xs mt-1 leading-snug max-w-[200px]" style={{ color: '#888880' }}>{j.addr}</div>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 align-top">
                   <span className="px-2 py-1 rounded text-xs font-bold" style={{ background: '#E5E2D8', border: '1px solid #CCC9B5', color: '#3A3A38' }}>{j.state || '—'}</span>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 align-top">
                   <div className="font-extrabold text-sm">{j.pic || '—'}</div>
                   <div className="font-mono text-xs mt-1" style={{ color: '#888880' }}>{j.phone}</div>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 align-top">
                   <div className="flex flex-col gap-1.5 min-w-[260px]">
                     {(Object.entries(j.services) as [ServiceKey, any][]).map(([k, s]) => {
                       const st = svcStatus(s)
@@ -448,7 +448,7 @@ export default function JobBoardPage() {
                   </div>
                 </td>
                 {canEdit && (
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 align-top">
                     <button onClick={() => openEditModal(j)} className="action-btn mr-1">✏️</button>
                     {isMaster && <button onClick={() => handleDelete(j.id)} className="action-btn">🗑️</button>}
                   </td>
