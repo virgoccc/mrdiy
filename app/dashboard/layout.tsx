@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center" style={{background:'#1A1A1A'}}>
       <div className="text-center">
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mx-auto mb-3" style={{background:'#FFD600'}}>🔧</div>
+        <img src="/mrdiy.png" alt="MR DIY" className="w-20 h-20 mx-auto mb-3 rounded-2xl" style={{objectFit:'contain'}} onError={e => { (e.target as HTMLImageElement).style.display='none' }} />
         <p className="text-white text-sm font-bold tracking-widest uppercase opacity-60">Loading…</p>
       </div>
     </div>
