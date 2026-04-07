@@ -154,7 +154,7 @@ export default function SharePage({ params }: { params: { token: string } }) {
         </div>
 
         {/* Mobile card view */}
-        <div className="block md:hidden flex flex-col gap-3 mb-4">
+        <div className="flex md:hidden flex-col gap-3 mb-4">
           {filtered.map(j => (
             <div key={j.id} className="rounded-xl p-4 shadow-sm" style={{ border: '1.5px solid #E2DFD3', background: '#fff' }}>
               <div className="flex items-start justify-between mb-2">
