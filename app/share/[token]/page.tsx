@@ -2,7 +2,7 @@
 // app/share/[token]/page.tsx — Public read-only job board via share token (no login required)
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
-import { Job, SVC_META, ServiceKey, TL_STAGES, TL_FINAL } from '@/types'
+import { Job, SVC_META, ServiceKey, TL_STAGES } from '@/types'
 import { daysFromNow, formatDate, svcStatus, countdownLabel } from '@/lib/utils'
 
 function TimelinePanel({ job }: { job: Job }) {
@@ -21,12 +21,12 @@ function TimelinePanel({ job }: { job: Job }) {
               </div>
               <div className="flex items-start">
                 {stages.map((stage, i) => {
-                  const isPast = i < cur, isActive = i === cur
-                  const dotBg = isPast || (isActive && i === TL_FINAL) ? '#1A7A3C' : isActive ? '#FFD600' : '#fff'
-                  const dotBorder = isPast || (isActive && i === TL_FINAL) ? '#1A7A3C' : isActive ? '#D4AF00' : '#CCC9B5'
-                  const dotColor = isPast || (isActive && i === TL_FINAL) ? '#fff' : isActive ? '#1A1A1A' : '#888880'
+                  const isPast = i < cur, isActive = i === cur && cur < stages.length
+                  const dotBg = isPast ? '#1A7A3C' : isActive ? '#FFD600' : '#fff'
+                  const dotBorder = isPast ? '#1A7A3C' : isActive ? '#D4AF00' : '#CCC9B5'
+                  const dotColor = isPast ? '#fff' : isActive ? '#1A1A1A' : '#888880'
                   const lblColor = isPast ? '#1A7A3C' : isActive ? '#D4AF00' : '#888880'
-                  const dotContent = isPast ? '✓' : (isActive && i === TL_FINAL) ? '✓' : stage.icon
+                  const dotContent = isPast ? '✓' : stage.icon
                   return (
                     <div key={i} className="flex items-start flex-1">
                       <div className="flex flex-col items-center flex-shrink-0" style={{ minWidth: '56px' }}>

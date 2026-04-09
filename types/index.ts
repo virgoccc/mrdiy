@@ -69,7 +69,6 @@ export const TL_STAGES: Record<ServiceKey, TimelineStage[]> = {
   ],
 }
 
-export const TL_FINAL = 3
 
 export const MALAYSIAN_STATES = [
   'Johor','Kedah','Kelantan','Melaka','Negeri Sembilan',

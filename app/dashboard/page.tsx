@@ -4,7 +4,7 @@ import Btn from '@/components/Btn'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
-import { Job, AppUser, SVC_META, ServiceKey, TL_STAGES, TL_FINAL, MALAYSIAN_STATES } from '@/types'
+import { Job, AppUser, SVC_META, ServiceKey, TL_STAGES, MALAYSIAN_STATES } from '@/types'
 import { daysFromNow, formatDate, svcStatus, jobOverdue, jobAllDone, jobPending, countdownLabel, buildTelegramJobMsg } from '@/lib/utils'
 import * as XLSX from 'xlsx'
 
@@ -36,18 +36,18 @@ function TimelinePanel({ job, canEdit, onStageClick }: { job: Job; canEdit: bool
               </div>
               <div className="flex items-start">
                 {stages.map((stage, i) => {
-                  const isPast = i < cur, isActive = i === cur
-                  const dotBg = isPast || (isActive && i === TL_FINAL) ? '#1A7A3C' : isActive ? '#FFD600' : '#fff'
-                  const dotBorder = isPast || (isActive && i === TL_FINAL) ? '#1A7A3C' : isActive ? '#D4AF00' : '#CCC9B5'
-                  const dotColor = isPast || (isActive && i === TL_FINAL) ? '#fff' : isActive ? '#1A1A1A' : '#888880'
-                  const dotShadow = isActive && i !== TL_FINAL ? '0 0 0 3px rgba(255,214,0,.2)' : isPast || (isActive && i === TL_FINAL) ? '0 0 0 3px rgba(26,122,60,.15)' : 'none'
+                  const isPast = i < cur, isActive = i === cur && cur < stages.length
+                  const dotBg = isPast ? '#1A7A3C' : isActive ? '#FFD600' : '#fff'
+                  const dotBorder = isPast ? '#1A7A3C' : isActive ? '#D4AF00' : '#CCC9B5'
+                  const dotColor = isPast ? '#fff' : isActive ? '#1A1A1A' : '#888880'
+                  const dotShadow = isActive ? '0 0 0 3px rgba(255,214,0,.2)' : isPast ? '0 0 0 3px rgba(26,122,60,.15)' : 'none'
                   const lblColor = isPast ? '#1A7A3C' : isActive ? '#D4AF00' : '#888880'
                   const lblWeight = isActive || isPast ? '800' : '600'
-                  const dotContent = isPast ? '✓' : (isActive && i === TL_FINAL) ? '✓' : stage.icon
+                  const dotContent = isPast ? '✓' : stage.icon
                   return (
                     <div key={i} className="flex items-start flex-1">
                       <div className="flex flex-col items-center flex-shrink-0"
-                        onClick={() => canEdit && onStageClick(k, i)}
+                        onClick={() => canEdit && onStageClick(k, i < cur ? i : i + 1)}
                         style={{ cursor: canEdit ? 'pointer' : 'default', minWidth: '56px' }}>
                         <div className="flex items-center justify-center rounded-full font-extrabold transition-all"
                           style={{ width: '30px', height: '30px', fontSize: '14px', background: dotBg, border: `2.5px solid ${dotBorder}`, color: dotColor, boxShadow: dotShadow, transition: 'all .2s' }}>
@@ -215,8 +215,9 @@ export default function JobBoardPage() {
     const updatedServices = { ...j.services, [svc]: { ...j.services[svc]!, done: newDone } }
     const updatedTlStages = { ...(j.tl_stages || {}) }
     if (j.timeline) {
-      if (newDone) updatedTlStages[svc] = TL_FINAL
-      else if (updatedTlStages[svc] === TL_FINAL) updatedTlStages[svc] = TL_FINAL - 1
+      const tlFinal = TL_STAGES[svc].length
+      if (newDone) updatedTlStages[svc] = tlFinal
+      else if (updatedTlStages[svc] === tlFinal) updatedTlStages[svc] = tlFinal - 1
     }
     const { data } = await supabase.from('jobs').update({ services: updatedServices, tl_stages: updatedTlStages, updated_at: new Date().toISOString() }).eq('id', jobId).select().single()
     if (data) {
@@ -228,7 +229,7 @@ export default function JobBoardPage() {
   async function handleTlStage(jobId: string, svc: ServiceKey, stage: number) {
     const j = jobs.find(x => x.id === jobId); if (!j) return
     const updatedTlStages = { ...(j.tl_stages || {}), [svc]: stage }
-    const newDone = stage === TL_FINAL
+    const newDone = stage >= TL_STAGES[svc].length
     const updatedServices = { ...j.services, [svc]: { ...j.services[svc]!, done: newDone } }
     const { data } = await supabase.from('jobs').update({ tl_stages: updatedTlStages, services: updatedServices, updated_at: new Date().toISOString() }).eq('id', jobId).select().single()
     if (data) {
@@ -247,7 +248,8 @@ export default function JobBoardPage() {
       } else {
         svcs.forEach(([k, s]) => {
           const stage = j.tl_stages?.[k as ServiceKey] ?? 0
-          const stageLbl = TL_STAGES[k as ServiceKey]?.[stage]?.lbl || '—'
+          const stagesArr = TL_STAGES[k as ServiceKey]
+          const stageLbl = stage >= stagesArr.length ? stagesArr[stagesArr.length - 1].lbl : stagesArr[stage]?.lbl || '—'
           rows.push({ Store: j.name, Code: j.code, State: j.state, Address: j.addr, PIC: j.pic, Phone: j.phone, Service: SVC_META[k as ServiceKey].label, Date: formatDate(s!.date), Status: s!.done ? 'Done' : 'Pending', 'Timeline Stage': j.timeline ? stageLbl : 'N/A' })
         })
       }
