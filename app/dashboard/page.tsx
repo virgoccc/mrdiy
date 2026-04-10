@@ -36,7 +36,8 @@ function TimelinePanel({ job, canEdit, onStageClick }: { job: Job; canEdit: bool
               </div>
               <div className="flex items-start">
                 {stages.map((stage, i) => {
-                  const isPast = i < cur, isActive = i === cur && cur < stages.length
+                  const doneCnt = Math.floor(cur / 2), hasActive = cur % 2 === 1
+                  const isPast = i < doneCnt, isActive = hasActive && i === doneCnt
                   const dotBg = isPast ? '#1A7A3C' : isActive ? '#FFD600' : '#fff'
                   const dotBorder = isPast ? '#1A7A3C' : isActive ? '#D4AF00' : '#CCC9B5'
                   const dotColor = isPast ? '#fff' : isActive ? '#1A1A1A' : '#888880'
@@ -44,10 +45,11 @@ function TimelinePanel({ job, canEdit, onStageClick }: { job: Job; canEdit: bool
                   const lblColor = isPast ? '#1A7A3C' : isActive ? '#D4AF00' : '#888880'
                   const lblWeight = isActive || isPast ? '800' : '600'
                   const dotContent = isPast ? '✓' : stage.icon
+                  const nextCur = i < doneCnt ? i * 2 + 1 : isActive ? (doneCnt + 1) * 2 : i * 2 + 1
                   return (
                     <div key={i} className="flex items-start flex-1">
                       <div className="flex flex-col items-center flex-shrink-0"
-                        onClick={() => canEdit && onStageClick(k, i < cur ? i : i + 1)}
+                        onClick={() => canEdit && onStageClick(k, nextCur)}
                         style={{ cursor: canEdit ? 'pointer' : 'default', minWidth: '56px' }}>
                         <div className="flex items-center justify-center rounded-full font-extrabold transition-all"
                           style={{ width: '30px', height: '30px', fontSize: '14px', background: dotBg, border: `2.5px solid ${dotBorder}`, color: dotColor, boxShadow: dotShadow, transition: 'all .2s' }}>
@@ -58,7 +60,7 @@ function TimelinePanel({ job, canEdit, onStageClick }: { job: Job; canEdit: bool
                         </div>
                       </div>
                       {i < stages.length - 1 && (
-                        <div className="flex-1 mt-4" style={{ height: '3px', background: i < cur ? '#D4AF00' : '#E2DFD3', transition: 'background .25s' }} />
+                        <div className="flex-1 mt-4" style={{ height: '3px', background: i < doneCnt ? '#D4AF00' : '#E2DFD3', transition: 'background .25s' }} />
                       )}
                     </div>
                   )
@@ -177,7 +179,7 @@ export default function JobBoardPage() {
 
     const existingTl = editJob?.tl_stages || {}
     const tl_stages: Record<string, number> = {}
-    Object.keys(services).forEach(k => { tl_stages[k] = existingTl[k as ServiceKey] ?? 0 })
+    Object.keys(services).forEach(k => { tl_stages[k] = existingTl[k as ServiceKey] ?? 1 })
 
     const payload = {
       name: fName.trim(), code: fCode.trim(), state: fState,
@@ -215,7 +217,7 @@ export default function JobBoardPage() {
     const updatedServices = { ...j.services, [svc]: { ...j.services[svc]!, done: newDone } }
     const updatedTlStages = { ...(j.tl_stages || {}) }
     if (j.timeline) {
-      const tlFinal = TL_STAGES[svc].length
+      const tlFinal = TL_STAGES[svc].length * 2
       if (newDone) updatedTlStages[svc] = tlFinal
       else if (updatedTlStages[svc] === tlFinal) updatedTlStages[svc] = tlFinal - 1
     }
@@ -229,7 +231,7 @@ export default function JobBoardPage() {
   async function handleTlStage(jobId: string, svc: ServiceKey, stage: number) {
     const j = jobs.find(x => x.id === jobId); if (!j) return
     const updatedTlStages = { ...(j.tl_stages || {}), [svc]: stage }
-    const newDone = stage >= TL_STAGES[svc].length
+    const newDone = stage >= TL_STAGES[svc].length * 2
     const updatedServices = { ...j.services, [svc]: { ...j.services[svc]!, done: newDone } }
     const { data } = await supabase.from('jobs').update({ tl_stages: updatedTlStages, services: updatedServices, updated_at: new Date().toISOString() }).eq('id', jobId).select().single()
     if (data) {
@@ -249,7 +251,8 @@ export default function JobBoardPage() {
         svcs.forEach(([k, s]) => {
           const stage = j.tl_stages?.[k as ServiceKey] ?? 0
           const stagesArr = TL_STAGES[k as ServiceKey]
-          const stageLbl = stage >= stagesArr.length ? stagesArr[stagesArr.length - 1].lbl : stagesArr[stage]?.lbl || '—'
+          const stageIdx = Math.floor(stage / 2)
+          const stageLbl = stageIdx >= stagesArr.length ? stagesArr[stagesArr.length - 1].lbl : stagesArr[stageIdx]?.lbl || '—'
           rows.push({ Store: j.name, Code: j.code, State: j.state, Address: j.addr, PIC: j.pic, Phone: j.phone, Service: SVC_META[k as ServiceKey].label, Date: formatDate(s!.date), Status: s!.done ? 'Done' : 'Pending', 'Timeline Stage': j.timeline ? stageLbl : 'N/A' })
         })
       }

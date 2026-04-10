@@ -21,7 +21,8 @@ function TimelinePanel({ job }: { job: Job }) {
               </div>
               <div className="flex items-start">
                 {stages.map((stage, i) => {
-                  const isPast = i < cur, isActive = i === cur && cur < stages.length
+                  const doneCnt = Math.floor(cur / 2), hasActive = cur % 2 === 1
+                  const isPast = i < doneCnt, isActive = hasActive && i === doneCnt
                   const dotBg = isPast ? '#1A7A3C' : isActive ? '#FFD600' : '#fff'
                   const dotBorder = isPast ? '#1A7A3C' : isActive ? '#D4AF00' : '#CCC9B5'
                   const dotColor = isPast ? '#fff' : isActive ? '#1A1A1A' : '#888880'
@@ -39,7 +40,7 @@ function TimelinePanel({ job }: { job: Job }) {
                         </div>
                       </div>
                       {i < stages.length - 1 && (
-                        <div className="flex-1 mt-4" style={{ height: '3px', background: i < cur ? '#D4AF00' : '#E2DFD3' }} />
+                        <div className="flex-1 mt-4" style={{ height: '3px', background: i < doneCnt ? '#D4AF00' : '#E2DFD3' }} />
                       )}
                     </div>
                   )
