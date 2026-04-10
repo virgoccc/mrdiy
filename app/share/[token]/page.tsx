@@ -167,8 +167,9 @@ export default function SharePage({ params }: { params: { token: string } }) {
               <div className="flex items-center gap-2 mb-3 text-xs font-bold">{j.pic} <span className="font-mono font-normal" style={{ color: '#888880' }}>{j.phone}</span></div>
               <div className="flex flex-col gap-1.5">
                 {(Object.entries(j.services) as [ServiceKey, any][]).map(([k, s]) => {
-                  const st = svcStatus(s)
-                  const d = daysFromNow(s.date)
+                  const displayDate = k === 'bunting' && s.date2 ? s.date2 : s.date
+                  const st = svcStatus({ ...s, date: displayDate })
+                  const d = daysFromNow(displayDate)
                   const { label: cdLbl } = countdownLabel(d, s.done)
                   const chipBg = st === 'done' ? '#F0FFF5' : st === 'overdue' ? '#FFF1F1' : st === 'soon' ? '#FFF6ED' : '#F7F6F2'
                   const chipBorder = st === 'done' ? '#99DDB8' : st === 'overdue' ? '#FFBBBB' : st === 'soon' ? '#FFD099' : '#E2DFD3'
@@ -178,7 +179,7 @@ export default function SharePage({ params }: { params: { token: string } }) {
                       <span className="text-base w-5 text-center flex-shrink-0">{SVC_META[k].icon}</span>
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-extrabold uppercase tracking-wide" style={{ color: '#3A3A38' }}>{SVC_META[k].label}</div>
-                        <div className={`font-mono text-xs mt-0.5 font-semibold ${st === 'overdue' ? 'text-red-600' : st === 'soon' ? 'text-orange-600' : st === 'done' ? 'text-green-700' : 'text-gray-400'}`}>{formatDate(s.date)}</div>
+                        <div className={`font-mono text-xs mt-0.5 font-semibold ${st === 'overdue' ? 'text-red-600' : st === 'soon' ? 'text-orange-600' : st === 'done' ? 'text-green-700' : 'text-gray-400'}`}>{formatDate(displayDate)}</div>
                       </div>
                       <span className="text-xs font-extrabold">{cdLbl}</span>
                     </div>
@@ -224,8 +225,9 @@ export default function SharePage({ params }: { params: { token: string } }) {
                   <td className="px-4 py-3 align-top">
                     <div className="flex flex-col gap-1.5 min-w-[260px]">
                       {(Object.entries(j.services) as [ServiceKey, any][]).map(([k, s]) => {
-                        const st = svcStatus(s)
-                        const d = daysFromNow(s.date)
+                        const displayDate = k === 'bunting' && s.date2 ? s.date2 : s.date
+                        const st = svcStatus({ ...s, date: displayDate })
+                        const d = daysFromNow(displayDate)
                         const { label: cdLbl, cls: cdCls } = countdownLabel(d, s.done)
                         const chipBg = st === 'done' ? '#F0FFF5' : st === 'overdue' ? '#FFF1F1' : st === 'soon' ? '#FFF6ED' : '#F7F6F2'
                         const chipBorder = st === 'done' ? '#99DDB8' : st === 'overdue' ? '#FFBBBB' : st === 'soon' ? '#FFD099' : '#E2DFD3'
@@ -237,7 +239,7 @@ export default function SharePage({ params }: { params: { token: string } }) {
                             <div className="flex-1 min-w-0">
                               <div className="text-xs font-extrabold uppercase tracking-wide" style={{ color: '#3A3A38' }}>{SVC_META[k].label}</div>
                               <div className={`font-mono text-xs mt-0.5 font-semibold ${st === 'overdue' ? 'text-red-600' : st === 'soon' ? 'text-orange-600' : st === 'done' ? 'text-green-700' : 'text-gray-400'}`}>
-                                {formatDate(s.date)}
+                                {formatDate(displayDate)}
                               </div>
                             </div>
                             <span className={`text-xs font-extrabold uppercase tracking-wide px-2 py-0.5 rounded ${cdMap[cdCls] || 'cd-ok'}`}>{cdLbl}</span>

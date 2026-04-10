@@ -95,6 +95,7 @@ export default function JobBoardPage() {
   const [fPhone, setFPhone] = useState('')
   const [selSvcs, setSelSvcs] = useState<Set<ServiceKey>>(new Set())
   const [svcDates, setSvcDates] = useState<Record<string, string>>({})
+  const [dismantleDates, setDismantleDates] = useState<Record<string, string>>({})
   const [tlEnabled, setTlEnabled] = useState(false)
 
   useEffect(() => { loadAll() }, [])
@@ -134,15 +135,16 @@ export default function JobBoardPage() {
 
   function openAddModal() {
     setEditJob(null); setFName(''); setFCode(''); setFState(''); setFAddr(''); setFPIC(''); setFPhone('')
-    setSelSvcs(new Set()); setSvcDates({}); setTlEnabled(false); setShowModal(true)
+    setSelSvcs(new Set()); setSvcDates({}); setDismantleDates({}); setTlEnabled(false); setShowModal(true)
   }
 
   function openEditModal(j: Job) {
     setEditJob(j); setFName(j.name); setFCode(j.code); setFState(j.state); setFAddr(j.addr); setFPIC(j.pic); setFPhone(j.phone)
     setSelSvcs(new Set(Object.keys(j.services) as ServiceKey[]))
     const sd: Record<string, string> = {}
-    Object.entries(j.services).forEach(([k, s]) => { if (s) sd[k] = s.date })
-    setSvcDates(sd); setTlEnabled(!!j.timeline); setShowModal(true)
+    const dd: Record<string, string> = {}
+    Object.entries(j.services).forEach(([k, s]) => { if (s) { sd[k] = s.date; if (s.date2) dd[k] = s.date2 } })
+    setSvcDates(sd); setDismantleDates(dd); setTlEnabled(!!j.timeline); setShowModal(true)
   }
 
   function toggleSvc(k: ServiceKey) {
@@ -173,7 +175,7 @@ export default function JobBoardPage() {
     selSvcs.forEach(k => {
       if (!svcDates[k]) { missing = true; return }
       const existing = editJob?.services[k]
-      services[k] = { date: svcDates[k], done: existing?.done || false }
+      services[k] = { date: svcDates[k], ...(k === 'bunting' && dismantleDates[k] ? { date2: dismantleDates[k] } : {}), done: existing?.done || false }
     })
     if (missing) { showToast('Set a date for every service', 'danger'); return }
 
@@ -425,8 +427,9 @@ export default function JobBoardPage() {
                 <td className="px-4 py-3 align-top">
                   <div className="flex flex-col gap-1.5 min-w-[260px]">
                     {(Object.entries(j.services) as [ServiceKey, any][]).map(([k, s]) => {
-                      const st = svcStatus(s)
-                      const d = daysFromNow(s.date)
+                      const displayDate = k === 'bunting' && s.date2 ? s.date2 : s.date
+                      const st = svcStatus({ ...s, date: displayDate })
+                      const d = daysFromNow(displayDate)
                       const { label: cdLbl, cls: cdCls } = countdownLabel(d, s.done)
                       const chipBg = st === 'done' ? '#F0FFF5' : st === 'overdue' ? '#FFF1F1' : st === 'soon' ? '#FFF6ED' : '#F7F6F2'
                       const chipBorder = st === 'done' ? '#99DDB8' : st === 'overdue' ? '#FFBBBB' : st === 'soon' ? '#FFD099' : '#E2DFD3'
@@ -439,7 +442,7 @@ export default function JobBoardPage() {
                           <div className="flex-1 min-w-0">
                             <div className="text-xs font-extrabold uppercase tracking-wide" style={{ color: '#3A3A38' }}>{SVC_META[k].label}</div>
                             <div className={`font-mono text-xs mt-0.5 font-semibold ${st === 'overdue' ? 'text-red-600' : st === 'soon' ? 'text-orange-600' : st === 'done' ? 'text-green-700' : 'text-gray-400'}`}>
-                              {formatDate(s.date)}
+                              {formatDate(displayDate)}
                             </div>
                           </div>
                           <span className={`text-xs font-extrabold uppercase tracking-wide px-2 py-0.5 rounded ${cdMap[cdCls] || 'cd-ok'}`}>{cdLbl}</span>
@@ -516,6 +519,12 @@ export default function JobBoardPage() {
                         className="w-full px-3 py-2 rounded-lg text-sm outline-none" style={{ background: '#fff', border: '1.5px solid #E2DFD3', fontFamily: '"Barlow Condensed",sans-serif', fontSize: '14px' }} />
                     </div>
                   ))}
+                  {selSvcs.has('bunting') && (
+                    <div><FL>🚧 Dismantle Date</FL>
+                      <input type="date" value={dismantleDates['bunting'] || ''} onChange={e => setDismantleDates(p => ({ ...p, bunting: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-lg text-sm outline-none" style={{ background: '#fff', border: '1.5px solid #E2DFD3', fontFamily: '"Barlow Condensed",sans-serif', fontSize: '14px' }} />
+                    </div>
+                  )}
                 </div>
               </div>
             )}

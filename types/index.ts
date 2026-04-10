@@ -5,6 +5,7 @@ export type ServiceKey = 'flyer' | 'posm' | 'bunting'
 
 export interface ServiceEntry {
   date: string
+  date2?: string
   done: boolean
 }
 
@@ -64,8 +65,8 @@ export const TL_STAGES: Record<ServiceKey, TimelineStage[]> = {
   bunting: [
     { lbl: 'Order Received',       icon: '📋' },
     { lbl: 'Printing in Progress', icon: '🖨️' },
-    { lbl: 'Buntings Installed',   icon: '🚩' },
-    { lbl: 'Buntings Dismantled',  icon: '🚧' },
+    { lbl: 'Buntings Installation', icon: '🚩' },
+    { lbl: 'Buntings Dismantling', icon: '🚧' },
   ],
 }
 
