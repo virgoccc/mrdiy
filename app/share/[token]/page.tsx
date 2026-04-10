@@ -185,8 +185,8 @@ export default function SharePage({ params }: { params: { token: string } }) {
                         <div className="text-xs font-extrabold uppercase tracking-wide" style={{ color: '#3A3A38' }}>{SVC_META[k].label}</div>
                         {isBunting && s.date2 ? (
                           <>
-                            <div className={`font-mono text-xs mt-0.5 font-semibold ${stColor(!useDismantle)}`}>📍 {formatDate(s.date)}</div>
-                            <div className={`font-mono text-xs font-semibold ${stColor(!!useDismantle)}`}>🚧 {formatDate(s.date2)}</div>
+                            <div className={`font-mono text-xs mt-0.5 font-semibold ${stColor(!useDismantle)}`}>🚩 Install: {formatDate(s.date)}</div>
+                            <div className={`font-mono text-xs font-semibold ${stColor(!!useDismantle)}`}>🚧 Dismantle: {formatDate(s.date2)}</div>
                           </>
                         ) : (
                           <div className={`font-mono text-xs mt-0.5 font-semibold ${stColor(true)}`}>{formatDate(s.date)}</div>
@@ -255,8 +255,8 @@ export default function SharePage({ params }: { params: { token: string } }) {
                               <div className="text-xs font-extrabold uppercase tracking-wide" style={{ color: '#3A3A38' }}>{SVC_META[k].label}</div>
                               {isBunting && s.date2 ? (
                                 <>
-                                  <div className={`font-mono text-xs mt-0.5 font-semibold ${stColor(!useDismantle)}`}>📍 {formatDate(s.date)}</div>
-                                  <div className={`font-mono text-xs font-semibold ${stColor(!!useDismantle)}`}>🚧 {formatDate(s.date2)}</div>
+                                  <div className={`font-mono text-xs mt-0.5 font-semibold ${stColor(!useDismantle)}`}>🚩 Install: {formatDate(s.date)}</div>
+                                  <div className={`font-mono text-xs font-semibold ${stColor(!!useDismantle)}`}>🚧 Dismantle: {formatDate(s.date2)}</div>
                                 </>
                               ) : (
                                 <div className={`font-mono text-xs mt-0.5 font-semibold ${stColor(true)}`}>{formatDate(s.date)}</div>
