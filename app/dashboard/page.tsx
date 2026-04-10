@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { Job, AppUser, SVC_META, ServiceKey, TL_STAGES, MALAYSIAN_STATES } from '@/types'
-import { daysFromNow, formatDate, svcStatus, jobOverdue, jobAllDone, jobPending, countdownLabel, buildTelegramJobMsg } from '@/lib/utils'
+import { daysFromNow, formatDate, svcStatus, jobOverdue, jobAllDone, jobPending, countdownLabel, buildTelegramJobMsg, buntingDisplayDate } from '@/lib/utils'
 import * as XLSX from 'xlsx'
 
 function SL({ children }: any) {
@@ -312,7 +312,7 @@ export default function JobBoardPage() {
 
       {!isClient && (() => {
         const ov = jobs.filter(jobOverdue).length
-        const sn = jobs.filter(j => !jobAllDone(j) && Object.values(j.services).some(s => { const d = daysFromNow(s!.date); return s && !s.done && d !== null && d >= 0 && d <= 2 })).length
+        const sn = jobs.filter(j => !jobAllDone(j) && Object.entries(j.services).some(([k, s]) => { const d = daysFromNow(buntingDisplayDate(j, k, s!)); return s && !s.done && d !== null && d >= 0 && d <= 2 })).length
         return (ov || sn) ? (
           <div className="flex flex-wrap gap-2 mb-4">
             {ov > 0 && <div className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold" style={{ background: '#FFF1F1', border: '1.5px solid #FFBBBB', color: '#C92B2B' }}>⚠️ {ov} store{ov > 1 ? 's' : ''} with overdue services!</div>}

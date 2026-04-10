@@ -23,8 +23,13 @@ export function svcStatus(s: { date: string; done: boolean }): 'done' | 'overdue
   return 'ok'
 }
 
+export function buntingDisplayDate(j: Job, k: string, s: { date: string; date2?: string; done: boolean }): string {
+  const useDismantle = k === 'bunting' && s.date2 && Math.floor((j.tl_stages?.[k as ServiceKey] ?? 0) / 2) >= 2
+  return useDismantle ? s.date2! : s.date
+}
+
 export function jobOverdue(j: Job): boolean {
-  return Object.values(j.services).some(s => s && !s.done && (daysFromNow(s.date) ?? 0) < 0)
+  return Object.entries(j.services).some(([k, s]) => s && !s.done && (daysFromNow(buntingDisplayDate(j, k, s)) ?? 0) < 0)
 }
 
 export function jobAllDone(j: Job): boolean {
