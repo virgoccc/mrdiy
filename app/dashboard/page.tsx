@@ -362,11 +362,16 @@ export default function JobBoardPage() {
             <div className="flex items-center gap-2 mb-3 text-xs font-bold">{j.pic} <span className="font-mono font-normal" style={{ color: '#888880' }}>{j.phone}</span></div>
             <div className="flex flex-col gap-1.5">
               {(Object.entries(j.services) as [ServiceKey, any][]).map(([k, s]) => {
-                const st = svcStatus(s)
-                const d = daysFromNow(s.date)
+                const isBunting = k === 'bunting'
+                const buntingDoneCnt = isBunting ? Math.floor((j.tl_stages?.[k] ?? 0) / 2) : 0
+                const useDismantle = isBunting && s.date2 && buntingDoneCnt >= 2
+                const countdownDate = useDismantle ? s.date2 : s.date
+                const st = svcStatus({ ...s, date: countdownDate })
+                const d = daysFromNow(countdownDate)
                 const { label: cdLbl } = countdownLabel(d, s.done)
                 const chipBg = st === 'done' ? '#F0FFF5' : st === 'overdue' ? '#FFF1F1' : st === 'soon' ? '#FFF6ED' : '#F7F6F2'
                 const chipBorder = st === 'done' ? '#99DDB8' : st === 'overdue' ? '#FFBBBB' : st === 'soon' ? '#FFD099' : '#E2DFD3'
+                const stColor = (active: boolean) => active ? (st === 'overdue' ? 'text-red-600' : st === 'soon' ? 'text-orange-600' : st === 'done' ? 'text-green-700' : 'text-gray-400') : 'text-gray-400'
                 return (
                   <div key={k} className="flex items-center gap-2 px-3 py-2 rounded-lg"
                     style={{ background: chipBg, border: `1.5px solid ${chipBorder}`, cursor: canEdit ? 'pointer' : 'default' }}
@@ -374,7 +379,14 @@ export default function JobBoardPage() {
                     <span className="text-base w-5 text-center flex-shrink-0">{SVC_META[k].icon}</span>
                     <div className="flex-1 min-w-0">
                       <div className="text-xs font-extrabold uppercase tracking-wide" style={{ color: '#3A3A38' }}>{SVC_META[k].label}</div>
-                      <div className={`font-mono text-xs mt-0.5 font-semibold ${st === 'overdue' ? 'text-red-600' : st === 'soon' ? 'text-orange-600' : st === 'done' ? 'text-green-700' : 'text-gray-400'}`}>{formatDate(s.date)}</div>
+                      {isBunting && s.date2 ? (
+                        <>
+                          <div className={`font-mono text-xs mt-0.5 font-semibold ${stColor(!useDismantle)}`}>📍 {formatDate(s.date)}</div>
+                          <div className={`font-mono text-xs font-semibold ${stColor(!!useDismantle)}`}>🚧 {formatDate(s.date2)}</div>
+                        </>
+                      ) : (
+                        <div className={`font-mono text-xs mt-0.5 font-semibold ${stColor(true)}`}>{formatDate(s.date)}</div>
+                      )}
                     </div>
                     <span className="text-xs font-extrabold">{cdLbl}</span>
                     {canEdit && <div className={`w-5 h-5 rounded flex items-center justify-center text-xs font-extrabold flex-shrink-0 ${s.done ? 'bg-green-600 text-white' : 'border border-gray-300'}`}>{s.done ? '✓' : ''}</div>}
@@ -427,13 +439,17 @@ export default function JobBoardPage() {
                 <td className="px-4 py-3 align-top">
                   <div className="flex flex-col gap-1.5 min-w-[260px]">
                     {(Object.entries(j.services) as [ServiceKey, any][]).map(([k, s]) => {
-                      const displayDate = k === 'bunting' && s.date2 ? s.date2 : s.date
-                      const st = svcStatus({ ...s, date: displayDate })
-                      const d = daysFromNow(displayDate)
+                      const isBunting = k === 'bunting'
+                      const buntingDoneCnt = isBunting ? Math.floor((j.tl_stages?.[k] ?? 0) / 2) : 0
+                      const useDismantle = isBunting && s.date2 && buntingDoneCnt >= 2
+                      const countdownDate = useDismantle ? s.date2 : s.date
+                      const st = svcStatus({ ...s, date: countdownDate })
+                      const d = daysFromNow(countdownDate)
                       const { label: cdLbl, cls: cdCls } = countdownLabel(d, s.done)
                       const chipBg = st === 'done' ? '#F0FFF5' : st === 'overdue' ? '#FFF1F1' : st === 'soon' ? '#FFF6ED' : '#F7F6F2'
                       const chipBorder = st === 'done' ? '#99DDB8' : st === 'overdue' ? '#FFBBBB' : st === 'soon' ? '#FFD099' : '#E2DFD3'
                       const cdMap: Record<string, string> = { done: 'cd-done', overdue: 'cd-overdue', today: 'cd-today', soon: 'cd-soon', ok: 'cd-ok' }
+                      const stColor = (active: boolean) => active ? (st === 'overdue' ? 'text-red-600' : st === 'soon' ? 'text-orange-600' : st === 'done' ? 'text-green-700' : 'text-gray-400') : 'text-gray-400'
                       return (
                         <div key={k} className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all"
                           style={{ background: chipBg, border: `1.5px solid ${chipBorder}`, cursor: canEdit ? 'pointer' : 'default' }}
@@ -441,9 +457,14 @@ export default function JobBoardPage() {
                           <span className="text-base w-5 text-center flex-shrink-0">{SVC_META[k].icon}</span>
                           <div className="flex-1 min-w-0">
                             <div className="text-xs font-extrabold uppercase tracking-wide" style={{ color: '#3A3A38' }}>{SVC_META[k].label}</div>
-                            <div className={`font-mono text-xs mt-0.5 font-semibold ${st === 'overdue' ? 'text-red-600' : st === 'soon' ? 'text-orange-600' : st === 'done' ? 'text-green-700' : 'text-gray-400'}`}>
-                              {formatDate(displayDate)}
-                            </div>
+                            {isBunting && s.date2 ? (
+                              <>
+                                <div className={`font-mono text-xs mt-0.5 font-semibold ${stColor(!useDismantle)}`}>📍 {formatDate(s.date)}</div>
+                                <div className={`font-mono text-xs font-semibold ${stColor(!!useDismantle)}`}>🚧 {formatDate(s.date2)}</div>
+                              </>
+                            ) : (
+                              <div className={`font-mono text-xs mt-0.5 font-semibold ${stColor(true)}`}>{formatDate(s.date)}</div>
+                            )}
                           </div>
                           <span className={`text-xs font-extrabold uppercase tracking-wide px-2 py-0.5 rounded ${cdMap[cdCls] || 'cd-ok'}`}>{cdLbl}</span>
                           {canEdit && <div className={`w-5 h-5 rounded flex items-center justify-center text-xs font-extrabold flex-shrink-0 ${s.done ? 'bg-green-600 text-white' : 'border border-gray-300'}`}>{s.done ? '✓' : ''}</div>}
